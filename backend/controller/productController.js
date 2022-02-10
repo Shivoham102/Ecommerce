@@ -1,5 +1,6 @@
 const { findByIdAndUpdate } = require("../models/productModel");
 const Product = require("../models/productModel");
+const ErrorHandler = require("../utils/errorHandler");
 
 //Create a product
 exports.createProduct = async (req,res,next) => {
@@ -23,10 +24,7 @@ exports.getAllProducts = async (req,res) => {
 exports.updateProduct = async (req,res,next) => {
     let product = await Product.findById(req.params.id);
     if(!product) {
-        res.status(500).json({
-            success: false,
-            message: "No product found"
-        })
+        return next(new ErrorHandler("No product found", 404));
     }
 
     product = await Product.findByIdAndUpdate(req.params.id,req.body,{
@@ -44,19 +42,26 @@ exports.updateProduct = async (req,res,next) => {
 
 //Get details of a product
 exports.getProductDetails = async (req,res,next) => {
-    const product = await Product.findById(req.params.id);
-    if(!product) {
-        res.status(500).json({
-            success: false,
-            message: "No product found"
+    // const product = await Product.findById({_id: req.params.id});
+    Product.findById(req.params.id, function (err, product) {
+        if (!product) {
+            return next(new ErrorHandler("No product found", 404))
+        }
+        res.status(200).json({
+            success: true,
+            message: "Details fetched successfully",
+            product
         })
-    }
-
-    res.status(200).json({
-        success: true,
-        message: "Details fetched successfully",
-        product
     })
+    // if(!product) {
+    //     return next(new ErrorHandler("No product found", 404))
+    // }
+
+    // res.status(200).json({
+    //     success: true,
+    //     message: "Details fetched successfully",
+    //     product
+    // })
 }
 
 //Delete a product
