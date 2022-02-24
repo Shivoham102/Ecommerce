@@ -1,3 +1,6 @@
+const express = require('express');
+const mongoose = require("mongoose");
+const Product = mongoose.model('Product');
 class ApiFeatures{
     constructor(query, queryString) {
         this.query = query;
@@ -29,9 +32,15 @@ class ApiFeatures{
         remove.forEach(key => delete queryCopy[key]);
 
         //Filter for Price and Rating
-        let queryinString = JSON.stringify(queryCopy);
+        let queryinString = JSON.stringify(queryCopy);        
+        console.log(queryinString);
         queryinString = queryinString.replace(/\b(gt|gte|lt|lte)\b/g, (key) => `$${key}`);
         this.query = this.query.find(JSON.parse(queryinString));
+        // Product.find().where("price").gt(15000).lt(260000)
+        //             .exec((err, res) => {
+        //                 this.query = res
+        //             })
+        // console.log(queryCopy);
         return this;
     }
 
