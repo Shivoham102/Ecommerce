@@ -1,7 +1,8 @@
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const User = require("../models/userModel");
-const req = require("express/lib/request");
+// const User = require("../models/userModel");
+const mongoose = require("mongoose");
+const User = mongoose.model("User");
 const sendToken = require("../utils/jtwToken");
 const sendEmail = require("../utils/sendEmail");
 
@@ -44,7 +45,7 @@ exports.loginUser = catchAsyncErrors(async(req,res,next) => {
     }
 
     sendToken(user, 200, res);
-})
+});
 
 exports.logoutUser = catchAsyncErrors(async (req,res,next) => {
     res.cookie("token", null, {
@@ -60,14 +61,14 @@ exports.logoutUser = catchAsyncErrors(async (req,res,next) => {
 
 exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
     const user = User.findOne({email: req.body.email});
-
+    // const testuser = new User(user);
     if(!user) {
-        new ErrorHandler("No user found", 404);
+        return next(new ErrorHandler("No user found", 404));
     }
-
+    console.log(user);
     //Get reset password token
-    const resetToken = user.getPasswordResetToken();
-
+    const resetToken = user.getResetPasswordToken();
+    
     await user.save({ validateBeforesave: false });
 
     const resetPasswordUrl = `${req.protocol}://${req.get('host')}/password/reset/${resetToken}`;

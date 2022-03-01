@@ -69,18 +69,18 @@ userSchema.methods.comparePassword = async function(enteredPassword) {
 };
 
 //Generating Password Reset Token
-userSchema.methods.getPasswordResetToken = function() {
+userSchema.methods.getResetPasswordToken = function() {
 
     //Generating Token
-    const resetToken = crypto.randomBytes(20).toString("hex")
+    const resetToken = crypto.randomBytes(20).toString("hex");
 
     //Hasing and adding the token to userSchema
     this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
-    this.resetPaswordExpire = Date.now() + 15 * 60 * 1000
-
+    this.resetPaswordExpire = Date.now() + 15 * 60 * 1000;
+    console.log("in func");
     return resetToken;
-}
+};
 
 
 module.exports = mongoose.model("User", userSchema);
